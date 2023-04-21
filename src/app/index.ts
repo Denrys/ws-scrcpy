@@ -8,6 +8,7 @@ window.onload = async function (): Promise<void> {
     const parsedQuery = new URLSearchParams(hash);
     const action = parsedQuery.get('action');
 
+    console.log("src/app/index.ts",action);
     /// #if USE_BROADWAY
     const { BroadwayPlayer } = await import('./player/BroadwayPlayer');
     StreamClientScrcpy.registerPlayer(BroadwayPlayer);
@@ -109,7 +110,6 @@ window.onload = async function (): Promise<void> {
             DeviceTracker.registerTool(tool);
         });
     }
-    debugger;
-    console.log("HostTracker",HostTracker);
+    // console.log("src/app/index.ts=>HostTracker.start()");
     HostTracker.start();
 };

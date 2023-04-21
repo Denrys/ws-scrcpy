@@ -20,6 +20,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
     protected ws?: Multiplexer | WebSocket;
 
     protected constructor(params: P) {
+        console.log("src/app/client/ManagerClient.ts=>constructor");
         super(params);
         this.action = Util.parseStringEnv(params.action);
         this.url = this.buildWebSocketUrl();
@@ -30,6 +31,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
     }
 
     protected openNewConnection(): Multiplexer | WebSocket {
+        console.log("src/app/client/ManagerClient.ts=>openNewConnection");
         if (this.ws && this.ws.readyState === this.ws.OPEN) {
             this.ws.close();
             delete this.ws;
@@ -51,7 +53,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
             }
             const ws = openedMultiplexer.createChannel(this.getChannelInitData());
             ws.addEventListener('open', this.onSocketOpen.bind(this));
-            ws.addEventListener('message', this.onSocketMessage.bind(this));
+            ws.addEventListener('message', this.onSocketMessage.bind(this)); //执行src\app\client\HostTracker.ts=>onSocketMessage方法
             ws.addEventListener('close', this.onSocketClose.bind(this));
             this.ws = ws;
         } else {
@@ -78,6 +80,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
     }
 
     protected buildWebSocketUrl(): URL {
+        console.log("src/app/client/ManagerClient.ts=>buildWebSocketUrl");
         const directUrl = this.buildDirectWebSocketUrl();
         if (this.params.useProxy && !this.supportMultiplexing()) {
             return this.wrapInProxy(directUrl);
@@ -86,6 +89,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
     }
 
     protected buildDirectWebSocketUrl(): URL {
+        console.log("src/app/client/ManagerClient.ts=>buildDirectWebSocketUrl");
         const { hostname, port, secure, action } = this.params;
         let urlString: string;
         if (typeof hostname === 'string' && typeof port === 'number') {
@@ -109,6 +113,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
     }
 
     protected wrapInProxy(directUrl: URL): URL {
+        console.log("src/app/client/ManagerClient.ts=>wrapInProxy");
         const localProtocol = location.protocol === 'https:' ? 'wss:' : 'ws:';
         const localUrl = new URL(`${localProtocol}//${location.host}`);
         localUrl.searchParams.set('action', ACTION.PROXY_WS);
@@ -121,6 +126,7 @@ export abstract class ManagerClient<P extends ParamsBase, TE> extends BaseClient
     }
 
     protected getChannelInitData(): Buffer {
+        console.log("src/app/client/ManagerClient.ts=>getChannelInitData");
         return Buffer.from(ManagerClient.CODE);
     }
 

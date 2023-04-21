@@ -38,6 +38,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     protected tableId = 'goog_device_list';
 
     public static start(hostItem: HostItem): DeviceTracker {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>start");
         const url = this.buildUrlForTracker(hostItem).toString();
         let instance = this.instancesByUrl.get(url);
         if (!instance) {
@@ -52,9 +53,10 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
 
     protected constructor(params: HostItem, directUrl: string) {
         super({ ...params, action: DeviceTracker.ACTION }, directUrl);
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>constructor",directUrl);
         DeviceTracker.instancesByUrl.set(directUrl, this);
-        this.buildDeviceTable();
-        this.openNewConnection();
+        this.buildDeviceTable(); //src/app/client/BaseDeviceTracker.ts=>buildDeviceTable 函数
+        this.openNewConnection(); //src/app/client/ManagerClient.ts=>openNewConnection函数
     }
 
     protected onSocketOpen(): void {
@@ -75,6 +77,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     }
 
     onInterfaceSelected = (event: Event): void => {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>onInterfaceSelected");
         const selectElement = event.currentTarget as HTMLSelectElement;
         const option = selectElement.selectedOptions[0];
         const url = decodeURI(option.getAttribute(Attribute.URL) || '');
@@ -85,6 +88,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     };
 
     private updateLink(params: { url: string; name: string; fullName: string; udid: string; store: boolean }): void {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>updateLink");
         const { url, name, fullName, udid, store } = params;
         const playerTds = document.getElementsByName(
             encodeURIComponent(`${DeviceTracker.AttributePrefixPlayerFor}${fullName}`),
@@ -121,6 +125,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     }
 
     onActionButtonClick = (event: MouseEvent): void => {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>onActionButtonClick");
         const button = event.currentTarget as HTMLButtonElement;
         const udid = button.getAttribute(Attribute.UDID);
         const pidString = button.getAttribute(Attribute.PID) || '';
@@ -145,6 +150,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     }
 
     protected static createUrl(params: ParamsDeviceTracker, udid = ''): URL {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>createUrl");
         const secure = !!params.secure;
         const hostname = params.hostname || location.hostname;
         const port = typeof params.port === 'number' ? params.port : secure ? 443 : 80;
@@ -158,6 +164,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     }
 
     protected static createInterfaceOption(name: string, url: string): HTMLOptionElement {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>createInterfaceOption");
         const optionElement = document.createElement('option');
         optionElement.setAttribute(Attribute.URL, url);
         optionElement.setAttribute(Attribute.NAME, name);
@@ -169,7 +176,12 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         return title.toLowerCase().replace(/\s/g, '_');
     }
 
+    //构建设备行，包含设备基本数据 device设备数据
     protected buildDeviceRow(tbody: Element, device: GoogDeviceDescriptor): void {
+        
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>buildDeviceRow");
+        console.log("tbody",tbody);
+        console.log("device",device);
         let selectedInterfaceUrl = '';
         let selectedInterfaceName = '';
         const blockClass = 'desc-block';
@@ -193,7 +205,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
         if (!services) {
             return;
         }
-
+        //把注册工具，shell devtools  listfiles 放入 工具div#device_services_XXXXXX
         DeviceTracker.tools.forEach((tool) => {
             const entry = tool.createEntryForDeviceList(device, blockClass, this.params);
             if (entry) {
@@ -205,11 +217,13 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
                     services.appendChild(entry);
                 }
             }
+            console.log("src\app\applDevice\client\DeviceTracker.ts=> tool.entry");
         });
 
         const streamEntry = StreamClientScrcpy.createEntryForDeviceList(device, blockClass, fullName, this.params);
         streamEntry && services.appendChild(streamEntry);
 
+        console.log("DESC_COLUMNS",DESC_COLUMNS);
         DESC_COLUMNS.forEach((item) => {
             const { title } = item;
             const fieldName = item.field;
@@ -221,6 +235,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
             }
             const td = document.createElement('div');
             td.classList.add(DeviceTracker.titleToClassName(title), blockClass);
+            console.log("src/app/googDevice/client/DeviceTracker.ts=>td",td);
             services.appendChild(td);
             if (fieldName === 'pid') {
                 hasPid = value !== '-1';
@@ -332,6 +347,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
             });
         }
 
+        console.log(" tbody.appendChild(row",row);
         tbody.appendChild(row);
         if (DeviceTracker.CREATE_DIRECT_LINKS && hasPid && selectedInterfaceUrl) {
             this.updateLink({
@@ -349,6 +365,7 @@ export class DeviceTracker extends BaseDeviceTracker<GoogDeviceDescriptor, never
     }
 
     public destroy(): void {
+        console.log("src/app/googDevice/client/DeviceTracker.ts=>destroy");
         super.destroy();
         DeviceTracker.instancesByUrl.delete(this.url.toString());
         if (!DeviceTracker.instancesByUrl.size) {

@@ -26,6 +26,7 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
     protected static instanceId = 0;
 
     public static registerTool(tool: Tool): void {
+        console.log("src/app/client/BaseDeviceTracker.ts=>registerTool");
         this.tools.add(tool);
     }
 
@@ -42,11 +43,12 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
     public static buildUrlForTracker(params: HostItem): URL {
         const wsUrl = this.buildUrl(params);
         wsUrl.searchParams.set('action', this.ACTION);
+        console.log("src/app/client/BaseDeviceTracker.ts=>buildUrlForTracker",wsUrl);
         return wsUrl;
     }
 
     public static buildLink(q: any, text: string, params: ParamsDeviceTracker): HTMLAnchorElement {
-        console.log("BaceDeviceTracker=>buildLink");
+        console.log("src/app/client/BaseDeviceTracker.ts=>buildLink");
         let { hostname } = params;
         let port: string | number | undefined = params.port;
         let protocol = params.secure ? 'https:' : 'http:';
@@ -83,6 +85,7 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
         super(params);
         this.elementId = `tracker_instance${++BaseDeviceTracker.instanceId}`;
         this.trackerName = `Unavailable. Host: ${params.hostname}, type: ${params.type}`;
+        console.log("src/app/client/BaseDeviceTracker.ts=>constructor");
         this.setBodyClass('list');
         this.setTitle();
     }
@@ -104,10 +107,10 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
         const data = this.descriptors;
         const devices = this.getOrCreateTableHolder();
         const tbody = this.getOrBuildTableBody(devices);
-
+        console.log("src/app/client/BaseDeviceTracker.ts=>buildDeviceTable",data);
         const block = this.getOrCreateTrackerBlock(tbody, this.trackerName);
         data.forEach((item) => {
-            this.buildDeviceRow(block, item);
+            this.buildDeviceRow(block, item); //src/app/googDevice/client/DeviceTracker.ts=》buildDeviceRow函数
         });
     }
 

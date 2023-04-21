@@ -8,12 +8,14 @@ import { HostItem } from '../../../types/Configuration';
 import { ChannelCode } from '../../../common/ChannelCode';
 import { Tool } from '../../client/Tool';
 
+//DeviceTracker  继承自BaseDeviceTracker
 export class DeviceTracker extends BaseDeviceTracker<ApplDeviceDescriptor, never> {
     public static ACTION = ACTION.APPL_DEVICE_LIST;
     protected static tools: Set<Tool> = new Set();
     private static instancesByUrl: Map<string, DeviceTracker> = new Map();
 
     public static start(hostItem: HostItem): DeviceTracker {
+        console.log("src\app\applDevice\client\DeviceTracker.ts=>start");
         const url = this.buildUrlForTracker(hostItem).toString();
         let instance = this.instancesByUrl.get(url);
         if (!instance) {
@@ -27,6 +29,7 @@ export class DeviceTracker extends BaseDeviceTracker<ApplDeviceDescriptor, never
     }
     protected tableId = 'appl_devices_list';
     constructor(params: HostItem, directUrl: string) {
+        console.log("src\app\applDevice\client\DeviceTracker.ts=>constructor");
         super({ ...params, action: DeviceTracker.ACTION }, directUrl);
         DeviceTracker.instancesByUrl.set(directUrl, this);
         this.buildDeviceTable();
@@ -36,8 +39,10 @@ export class DeviceTracker extends BaseDeviceTracker<ApplDeviceDescriptor, never
     protected onSocketOpen(): void {
         // do nothing;
     }
-
+  //构建deviceRow，一个设备一行
     protected buildDeviceRow(tbody: Element, device: ApplDeviceDescriptor): void {
+        console.log("src\app\applDevice\client\DeviceTracker.ts=>buildDeviceRow");
+      
         const blockClass = 'desc-block';
         const fullName = `${this.id}_${Util.escapeUdid(device.udid)}`;
         const isActive = device.state === DeviceState.CONNECTED;
@@ -59,6 +64,7 @@ export class DeviceTracker extends BaseDeviceTracker<ApplDeviceDescriptor, never
             return;
         }
 
+        //把注册工具，shell devtools  listfiles 放入 工具div#device_services_XXXXXX
         DeviceTracker.tools.forEach((tool) => {
             const entry = tool.createEntryForDeviceList(device, blockClass, this.params);
             if (entry) {
@@ -70,6 +76,7 @@ export class DeviceTracker extends BaseDeviceTracker<ApplDeviceDescriptor, never
                     services.appendChild(entry);
                 }
             }
+            console.log("src\app\applDevice\client\DeviceTracker.ts=> tool.entry");
         });
         tbody.appendChild(row);
     }
