@@ -102,11 +102,14 @@ window.onload = async function (): Promise<void> {
     tools.push(FileListingClient);
     /// #endif
 
+    console.log("tools",tools);
     if (tools.length) {
         const { DeviceTracker } = await import('./googDevice/client/DeviceTracker');
         tools.forEach((tool) => {
             DeviceTracker.registerTool(tool);
         });
     }
+    debugger;
+    console.log("HostTracker",HostTracker);
     HostTracker.start();
 };

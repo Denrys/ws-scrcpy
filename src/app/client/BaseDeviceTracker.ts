@@ -46,6 +46,7 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
     }
 
     public static buildLink(q: any, text: string, params: ParamsDeviceTracker): HTMLAnchorElement {
+        console.log("BaceDeviceTracker=>buildLink");
         let { hostname } = params;
         let port: string | number | undefined = params.port;
         let protocol = params.secure ? 'https:' : 'http:';
@@ -65,6 +66,7 @@ export abstract class BaseDeviceTracker<DD extends BaseDeviceDescriptor, TE> ext
         a.setAttribute('target', '_blank');
         a.classList.add(`link-${q.action}`);
         a.innerText = text;
+        console.log("buildLink",a);
         return a;
     }
 
